@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>
+      Graphical Stats of Server @ Healthkart
+    </title>
+    <script type="text/javascript" src="//www.google.com/jsapi"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript">
+      google.load('visualization', '1.1', {packages: ['corechart', 'controls']});
+    </script>
+    <script type="text/javascript">
+    var _currdate = new Date();
+    _currdate.setHours(00,00,00,00);
+    var _tilldate = new Date();
+    _tilldate.setHours(00,10,00,00);
+function drawVisualization() {
+  var dashboard = new google.visualization.Dashboard(
+       document.getElementById('dashboard'));
+
+   var control = new google.visualization.ControlWrapper({
+     'controlType': 'ChartRangeFilter',
+     'containerId': 'control',
+     'options': {
+       // Filter by the date axis.
+       'filterColumnIndex': 0,
+       'ui': {
+         'chartType': 'LineChart',
+         'chartOptions': {
+           'chartArea': {'width': '90%', 'height' : '50%'},
+           'hAxis': {'baselineColor': 'none'}
+         },
+         // Display a single series that shows the closing value of the stock.
+         // Thus, this view has two columns: the date (axis) and the stock value (line series).
+         'chartView': {
+           'columns': [0, 1]
+         },
+         // 1 day in milliseconds = 24 * 60 * 60 * 1000 = 86,400,000
+         //'minRangeSize': 8640
+       }
+     },
+     // Initial range: 2012-02-09 to 2012-03-20.
+     'state': {'range': {'start': _currdate , 'end': _tilldate}}
+   });
+
+   var chart = new google.visualization.ChartWrapper({
+     'chartType': 'LineChart',
+     'containerId': 'chart',
+     'options': {
+       // Use the same chart area width as the control for axis alignment.
+        'title' : 'VMN-411',
+	'dateFormat' : 'HH:mm',
+	'curveType' : 'function',
+        'colors' : ['green'],
+	'chartArea': {'height': '80%', 'width': '90%'},
+       'hAxis': { 'textPosition' : 'out', 'slantedText': false , 'showTextEvery' : 1, 'gridlines' : { 'count' : 8}},
+       'vAxis': {'viewWindow': {'min': 0, 'max': 70}, 'title' : 'Session Rate', 'titleTextStyle' : {'bold' : false, 'italic' : false} },
+       'legend': {'position': 'none'}
+     },
+     // Convert the first column from 'date' to 'string'.
+     /*'view': {
+       'columns': [
+         {
+           'calc': function(dataTable, rowIndex) {
+             return dataTable.getFormattedValue(rowIndex, 0);
+           },
+           'type': 'string'
+         }, 1]
+     }*/
+   });
+	 var jsonData = $.ajax({
+          url: "/api/?svname=vmn-411",
+          dataType:"json",
+          async: false
+          }).responseText;
+  
+  //var jsonData = {"cols":[{"label":"Time","type":"datetime"},{"label":"Today","type":"number"}],"rows":[{"c":[{"v":"Date(1401906820625)"},{"v":"10"}]},{"c":[{"v":"Date(1401906826156)"},{"v":"13"}]},{"c":[{"v":"Date(1401906831684)"},{"v":"12"}]},{"c":[{"v":"Date(1401906837212)"},{"v":"12"}]},{"c":[{"v":"Date(1401906842752)"},{"v":"24"}]},{"c":[{"v":"Date(1401906848325)"},{"v":"11"}]},{"c":[{"v":"Date(1401906853901)"},{"v":"19"}]},{"c":[{"v":"Date(1401906873575)"},{"v":"7"}]},{"c":[{"v":"Date(1401906879117)"},{"v":"15"}]},{"c":[{"v":"Date(1401906884658)"},{"v":"23"}]},{"c":[{"v":"Date(1401906890197)"},{"v":"8"}]},{"c":[{"v":"Date(1401906895732)"},{"v":"15"}]},{"c":[{"v":"Date(1401906901305)"},{"v":"15"}]},{"c":[{"v":"Date(1401906906832)"},{"v":"11"}]},{"c":[{"v":"Date(1401906912365)"},{"v":"13"}]},{"c":[{"v":"Date(1401906928768)"},{"v":"9"}]},{"c":[{"v":"Date(1401906934353)"},{"v":"18"}]},{"c":[{"v":"Date(1401906939908)"},{"v":"13"}]},{"c":[{"v":"Date(1401906945443)"},{"v":"17"}]},{"c":[{"v":"Date(1401906951001)"},{"v":"12"}]},{"c":[{"v":"Date(1401906956542)"},{"v":"8"}]},{"c":[{"v":"Date(1401906982125)"},{"v":"18"}]},{"c":[{"v":"Date(1401906987858)"},{"v":"15"}]},{"c":[{"v":"Date(1401906993388)"},{"v":"17"}]},{"c":[{"v":"Date(1401906998930)"},{"v":"14"}]},{"c":[{"v":"Date(1401907047227)"},{"v":"7"}]},{"c":[{"v":"Date(1401907052773)"},{"v":"7"}]},{"c":[{"v":"Date(1401907058308)"},{"v":"7"}]},{"c":[{"v":"Date(1401907063850)"},{"v":"20"}]},{"c":[{"v":"Date(1401907069385)"},{"v":"11"}]},{"c":[{"v":"Date(1401907074902)"},{"v":"13"}]},{"c":[{"v":"Date(1401907080475)"},{"v":"18"}]},{"c":[{"v":"Date(1401907086030)"},{"v":"22"}]},{"c":[{"v":"Date(1401907091591)"},{"v":"8"}]},{"c":[{"v":"Date(1401907097118)"},{"v":"11"}]},{"c":[{"v":"Date(1401907102659)"},{"v":"15"}]},{"c":[{"v":"Date(1401907108199)"},{"v":"10"}]},{"c":[{"v":"Date(1401907113750)"},{"v":"10"}]},{"c":[{"v":"Date(1401907119334)"},{"v":"14"}]},{"c":[{"v":"Date(1401907124998)"},{"v":"8"}]},{"c":[{"v":"Date(1401907130565)"},{"v":"10"}]},{"c":[{"v":"Date(1401907136111)"},{"v":"9"}]},{"c":[{"v":"Date(1401907141653)"},{"v":"9"}]},{"c":[{"v":"Date(1401907147198)"},{"v":"18"}]},{"c":[{"v":"Date(1401907152787)"},{"v":"13"}]},{"c":[{"v":"Date(1401907158394)"},{"v":"14"}]},{"c":[{"v":"Date(1401907163928)"},{"v":"13"}]},{"c":[{"v":"Date(1401907169461)"},{"v":"14"}]},{"c":[{"v":"Date(1401907175140)"},{"v":"20"}]},{"c":[{"v":"Date(1401907180699)"},{"v":"29"}]},{"c":[{"v":"Date(1401907186245)"},{"v":"10"}]},{"c":[{"v":"Date(1401907191798)"},{"v":"17"}]},{"c":[{"v":"Date(1401907197445)"},{"v":"11"}]},{"c":[{"v":"Date(1401907203002)"},{"v":"11"}]}]};
+   var data = new google.visualization.DataTable(jsonData);
+  
+   dashboard.bind(control, chart);
+   dashboard.draw(data);
+}
+ google.setOnLoadCallback(drawVisualization);
+</script>
+  </head>
+  <body>
+    <div id="dashboard">
+        <div id="chart" style="width : 915px; height: 300px"></div>
+        <div id="control" style="width: 900px; heigth: 50px;"></div>
+    </div>
+  </body>
+</html>

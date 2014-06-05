@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>
+      Graphical Stats of Server @ Healthkart
+    </title>
+    <script type="text/javascript" src="//www.google.com/jsapi"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript">
+      google.load('visualization', '1.1', {packages: ['corechart', 'controls']});
+    </script>
+    <script type="text/javascript">
+    //var _currdate = new Date();
+    //_currdate.setMinutes(_currdate.getMinutes() - 10);
+    //var _tilldate = new Date();
+function drawVisualization() {
+    var _currdate = new Date();
+    _currdate.setMinutes(_currdate.getMinutes() - 10);
+    var _tilldate = new Date();
+ var dashboard = new google.visualization.Dashboard(
+       document.getElementById('dashboard'));
+
+   var control = new google.visualization.ControlWrapper({
+     'controlType': 'ChartRangeFilter',
+     'containerId': 'control',
+     'options': {
+       // Filter by the date axis.
+       'filterColumnIndex': 0,
+       'ui': {
+         'chartType': 'LineChart',
+         'chartOptions': {
+           'chartArea': {'width': '200%', 'height' : '50%'},
+           'hAxis': {'baselineColor': 'none'},
+	   'interpolateNulls' : true,
+	   'colors' : [ 'green' , 'blue'],
+         },
+         // Display a single series that shows the closing value of the stock.
+         // Thus, this view has two columns: the date (axis) and the stock value (line series).
+         'chartView': {
+           'columns': [0,1,2]
+         },
+         // 1 day in milliseconds = 24 * 60 * 60 * 1000 = 86,400,000
+         //'minRangeSize': 8640
+       }
+     },
+     // Initial range: 2012-02-09 to 2012-03-20.
+     'state': {'range': {'start': _currdate , 'end': _tilldate}}
+   });
+
+   var chart = new google.visualization.ChartWrapper({
+     'chartType': 'LineChart',
+     'containerId': 'chart',
+     'options': {
+       // Use the same chart area width as the control for axis alignment.
+        'interpolateNulls' : true,
+        'title' : 'VMN-411',
+	'dateFormat' : 'HH:mm',
+	'curveType' : 'function',
+        'colors' : ['green', 'blue'],
+	'chartArea': {'height': '80%', 'width': '90%'},
+       'hAxis': { 'textPosition' : 'out', 'slantedText': false , 'showTextEvery' : 1, 'gridlines' : { 'count' : 8}},
+       'vAxis': {'viewWindow': {'min': 0, 'max': 70}, 'title' : 'Session Rate', 'titleTextStyle' : {'bold' : false, 'italic' : false} },
+       'legend': {'position': 'none'}
+     },
+     // Convert the first column from 'date' to 'string'.
+     /*'view': {
+       'columns': [
+         {
+           'calc': function(dataTable, rowIndex) {
+             return dataTable.getFormattedValue(rowIndex, 0);
+           },
+           'type': 'string'
+         }, 1]
+     }*/
+   });
+   var jsonData_one = $.ajax({
+       url: "/api/?svname=vmn-415&day=lastday",
+       dataType:"json",
+       async: false
+   }).responseText;
+  
+   var data1 = new google.visualization.DataTable(jsonData_one);
+   
+   var jsonData2 = $.ajax({
+          url: "/api/?svname=vmn-415&day=today",
+          dataType:"json",
+          async: false
+          }).responseText;
+
+    var data2 = new google.visualization.DataTable(jsonData2);
+      
+    //var data = new google.visualization.DataTable();
+    var data = google.visualization.data.join(data1, data2, 'full', [[0,0]], [1], [1]);
+    dashboard.bind(control, chart);   
+    dashboard.draw(data);
+    //alert(data.getNumberOfCols);
+    setTimeout(drawVisualization, 8000);
+}
+ google.setOnLoadCallback(drawVisualization);
+</script>
+  </head>
+  <body>
+    <h3>Performace @ Healthkart</h3>
+    <label>Select cluster</label>
+    <select>
+    	<option value="api">API BOXES</option>
+	<option value="healthkart-prod">Healthkart-PROD</option>
+    </select>
+    <div id="dashboard">
+        <div id="chart" style="width : 1200px; height: 450px"></div>
+        <div id="control" style="width: 1200px; heigth: 50px;"></div>
+    </div>
+    <div id="joined_table">
+    	
+    </div>
+  </body>
+</html>

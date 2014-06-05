@@ -1,0 +1,57 @@
+<html>
+  <head>
+    <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type='text/javascript'>
+      google.load('visualization', '1.1', {'packages':['corechart']});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var jsonData = $.ajax({
+                url: "/api/?svname=vmn-411",
+                dataType:"json",
+                async: false
+          }).responseText;
+	
+	//jsonData = window.JSON.stringify(jsonData);
+	//alert(jsonData);
+	var data = new google.visualization.DataTable(jsonData);
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+        var options = {
+	   chartArea : { width: '500%',},
+	   curveType : 'function',
+	   title: "VMN-411",
+	   hAxis : {
+		title: 'Time',
+		titleTextStyle: {
+			bold: true,
+			italic: false,
+		},
+		gridlines : {
+			count : 100,
+		},
+    	   },
+	   vAxis : {
+		title : 'Session Rate',
+		titleTextStyle: {
+			bold : true,
+			italic: false,
+		},
+		gridlines : {
+			count : 100
+		},
+		ticks: [5,15,25,35,45,55,65],
+	   },
+	  // width : data.getNumberOfRows() * 2,
+	   explorer: { actions: ['dragToZoom', 'rightClickToReset'] } 
+        };
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+
+  <body>
+	Hello
+    <div id='chart_div' style="overflow-x"></div>
+  </body>
+</html>
