@@ -14,6 +14,7 @@
     //var _currdate = new Date();
     //_currdate.setMinutes(_currdate.getMinutes() - 10);
     //var _tilldate = new Date();
+    var graphDraw;
     var svname,box;
 	function drawVisualization(sname,bbox) {
 	//alert(svname);
@@ -106,8 +107,16 @@
 	  getit();
 	 // setTimeout(getit, 5000);
     	//alert(data.getNumberOfCols);
-    	setTimeout(function(){drawVisualization('','');}, 9000);
+    	graphDraw = setTimeout(function(){drawVisualization('','');}, 9000);
 }
+	function stop(){
+		if(graphDraw){
+			clearTimeout(graphDraw);
+		}
+	}
+	function restart(){
+		drawVisualization(svname,box);
+	}
  google.setOnLoadCallback(function(){
 	drawVisualization('','');
 });
@@ -140,6 +149,8 @@
 	<option value="--">--------------</option>
 	<option value="prod-s40">Prod S40</option>
     </select>
+    <button onClick="stop()">Stop Auto Loading</button>
+    <button onClick="restart()">Start Auto Loading</button>
     <div id="dashboard">
         <div id="chart" style="width : 1300px; height: 450px"></div>
         <div id="control" style="width: 1300px; heigth: 50px;"></div>
