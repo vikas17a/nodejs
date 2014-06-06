@@ -63,7 +63,7 @@ function statsapp(){
 			}
 		});
 		fs.createReadStream(csvFile).pipe(csvConverter);
-		cp2.exec('GET -C "healthkart:adw38&6cdQE" "http://healthkart.com/haproxy?stats;csv;norefresh" > csv2',function(error, stdout, stderr){
+		cp.exec('GET -C "healthkart:adw38&6cdQE" "http://healthkart.com/haproxy?stats;csv;norefresh" > csv2',function(error, stdout, stderr){
 		if (error || stderr){
                         console.log("Did not recieve any data");
                 }

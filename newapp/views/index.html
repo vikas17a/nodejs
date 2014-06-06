@@ -62,7 +62,8 @@
      'containerId': 'chart',
      'options': {
        // Use the same chart area width as the control for axis alignment.
-        'interpolateNulls' : true,
+        'title' : svname,
+	'interpolateNulls' : true,
 	'crosshair' : { 'trigger' : 'both' },
 	'dateFormat' : 'HH:mm',
 	'curveType' : 'function',
@@ -107,7 +108,7 @@
 	  getit();
 	 // setTimeout(getit, 5000);
     	//alert(data.getNumberOfCols);
-    	graphDraw = setTimeout(function(){drawVisualization('','');}, 9000);
+    	graphDraw = setTimeout(function(){drawVisualization('','');}, 11000);
 }
 	function stop(){
 		if(graphDraw){
@@ -123,7 +124,7 @@
 </script>
   </head>
   <body>
-    <h3>Performace @ Healthkart</h3>
+    <h3><font face="verdana" color="green">Performace @ Healthkart</font></h3>
     <label>Select cluster</label>
     <select onChange="drawVisualization(this.value,'api')">
     	<option value="--" selected>API BOXES</option>
