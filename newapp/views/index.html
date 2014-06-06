@@ -14,9 +14,15 @@
     //var _currdate = new Date();
     //_currdate.setMinutes(_currdate.getMinutes() - 10);
     //var _tilldate = new Date();
-    //var svname = 'vmn-411';
-function drawVisualization(svname) {
+    var svname,box;
+	function drawVisualization(sname,bbox) {
 	//alert(svname);
+	if(sname != ''){
+    		svname = sname;
+	}
+	if(bbox != ''){
+		box = bbox;
+	}
     var _currdate = new Date();
     _currdate.setMinutes(_currdate.getMinutes() - 10);
     var _tilldate = new Date();
@@ -62,7 +68,7 @@ function drawVisualization(svname) {
         'colors' : ['green', 'blue'],
 	'chartArea': {'height': '80%', 'width': '80%'},
        'hAxis': { 'textPosition' : 'out', 'slantedText': false , 'showTextEvery' : 1, 'gridlines' : { 'count' : 8}},
-       'vAxis': {'viewWindow': {'min': 0, 'max': 70}, 'title' : 'Session Rate', 'titleTextStyle' : {'bold' : false, 'italic' : false} }
+       'vAxis': {'title' : 'Session Rate', 'titleTextStyle' : {'bold' : false, 'italic' : false} }
      },
      // Convert the first column from 'date' to 'string'.
      /*'view': {
@@ -75,45 +81,51 @@ function drawVisualization(svname) {
          }, 1]
      }*/
    });
-   var jsonData_one = $.ajax({
-       url: "/api/?svname="+ svname +"&day=lastday",
-       dataType:"json",
-       async: false
-   }).responseText;
+	function getit(){
+   		var jsonData_one = $.ajax({
+       		url: "/api/?svname="+ svname +"&day=lastday&box=" + box,
+       		dataType:"json",
+       		async: false
+   		}).responseText;
   
-   var data1 = new google.visualization.DataTable(jsonData_one);
+   		var data1 = new google.visualization.DataTable(jsonData_one);
    
-   var jsonData2 = $.ajax({
-          url: "/api/?svname="+ svname +"&day=today",
-          dataType:"json",
-          async: false
-          }).responseText;
+   		var jsonData2 = $.ajax({
+        		url: "/api/?svname="+ svname +"&day=today&box=" + box,
+          		dataType:"json",
+          		async: false
+          	}).responseText;
 
-    var data2 = new google.visualization.DataTable(jsonData2);
+    		var data2 = new google.visualization.DataTable(jsonData2);
       
-    //var data = new google.visualization.DataTable();
-    var data = google.visualization.data.join(data1, data2, 'full', [[0,0]], [1], [1]);
-    dashboard.bind(control, chart);   
-    dashboard.draw(data);
-    //alert(data.getNumberOfCols);
-    //setTimeout(drawVisualization(svname), 8000);
+    		//var data = new google.visualization.DataTable();
+    		var data = google.visualization.data.join(data1, data2, 'full', [[0,0]], [1], [1]);
+    		dashboard.bind(control, chart);   
+    		dashboard.draw(data);
+          }
+	  getit();
+	 // setTimeout(getit, 5000);
+    	//alert(data.getNumberOfCols);
+    	setTimeout(function(){drawVisualization('','');}, 5000);
 }
  google.setOnLoadCallback(function(){
-	drawVisualization('');
+	drawVisualization('','');
 });
 </script>
   </head>
   <body>
     <h3>Performace @ Healthkart</h3>
     <label>Select cluster</label>
-    <select onChange="drawVisualization(this.value)">
+    <select onChange="drawVisualization(this.value,'api')">
     	<option value="--" selected>API BOXES</option>
 	<option value="--">------------</option>
 	<option value="vmn-411">VMN-411</option>
 	<option value="vmn-415">VMN-415</option>
 	<option value="vmn-416">VMN-416</option>
 	<option value="BACKEND">Total API CLUSTER</option>
-	<option value="--">--------------</option>
+	<option value="--">-----------------</option>
+     </select>
+     <select onChange="drawVisualization(this.value,'prod')">
 	<option value="--">Healthkart-PROD</option>
 	<option value="--">--------------</option>
 	<option value="vmn-265-P"> VMN-265-P </option>

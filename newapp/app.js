@@ -52,6 +52,7 @@ function statsapp(){
 		csvConverter.on("end_parsed", function(jsonObj){
 			for(var index in jsonObj){
 				jsonObj[index]["timestamp"]  = Date.now();
+				jsonObj[index]["# pxname"] = "api";
 				db.apibox.insert(jsonObj[index], function(err, result){
 					if (err) {
 						console.log("Error data not inserted");
@@ -70,6 +71,7 @@ function statsapp(){
                 csvConverter.on("end_parsed", function(jsonObj){
                         for(var index in jsonObj){
                                 jsonObj[index]["timestamp"]  = Date.now();
+				jsonObj[index]["# pxname"] = "prod";
                                 db.apibox.insert(jsonObj[index], function(err, result){
                                         if (err) {
                                                 console.log("Error data not inserted");
@@ -89,6 +91,7 @@ statsapp(); // kick to stats app function to get populate data in mongo
 app.get('/api/', function(req, res){
 	var server = req.query['svname'];
 	var day = req.query['day'];
+	var box = req.query['box'];
 	var _cur_date = new Date();
         var _tommorow_date = new Date();
         if ( day == "today"){
@@ -114,7 +117,7 @@ app.get('/api/', function(req, res){
 	}
 	console.log(_cur_date);
 	console.log(_tommorow_date);
-	db.apibox.find({ "# pxname" : "healthkart", "svname" : server, "timestamp" : { $gt: _cur_date, $lt: _tommorow_date} }, function(err, result){
+	db.apibox.find({ "# pxname" : box, "svname" : server, "timestamp" : { $gt: _cur_date, $lt: _tommorow_date} }, function(err, result){
 		//console.log(result);
 		var obj = {};	
 		if( day == "today" ){
