@@ -24,7 +24,7 @@
 		box = bbox;
 	}
     var _currdate = new Date();
-    _currdate.setMinutes(_currdate.getMinutes() - 10);
+    _currdate.setMinutes(_currdate.getMinutes() - 1);
     var _tilldate = new Date();
  var dashboard = new google.visualization.Dashboard(
        document.getElementById('dashboard'));
@@ -106,7 +106,7 @@
 	  getit();
 	 // setTimeout(getit, 5000);
     	//alert(data.getNumberOfCols);
-    	setTimeout(function(){drawVisualization('','');}, 5000);
+    	setTimeout(function(){drawVisualization('','');}, 9000);
 }
  google.setOnLoadCallback(function(){
 	drawVisualization('','');
@@ -134,6 +134,11 @@
 	<option value="vmn-339-S"> VMN-339-S </option>
 	<option value="spkd-0215-T"> SPKP-0215-T </option>
 	<option value="BACKEND"> Total HK-Prod </option>
+    </select>
+    <select onChange="drawVisualization(this.value,'healthkart_s40')">
+	<option>Healthkart</option>
+	<option value="--">--------------</option>
+	<option value="prod-s40">Prod S40</option>
     </select>
     <div id="dashboard">
         <div id="chart" style="width : 1300px; height: 450px"></div>
