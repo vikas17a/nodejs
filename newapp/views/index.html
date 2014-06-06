@@ -14,7 +14,9 @@
     //var _currdate = new Date();
     //_currdate.setMinutes(_currdate.getMinutes() - 10);
     //var _tilldate = new Date();
-function drawVisualization() {
+    //var svname = 'vmn-411';
+function drawVisualization(svname) {
+	//alert(svname);
     var _currdate = new Date();
     _currdate.setMinutes(_currdate.getMinutes() - 10);
     var _tilldate = new Date();
@@ -54,14 +56,13 @@ function drawVisualization() {
      'options': {
        // Use the same chart area width as the control for axis alignment.
         'interpolateNulls' : true,
-        'title' : 'VMN-411',
+	'crosshair' : { 'trigger' : 'both' },
 	'dateFormat' : 'HH:mm',
 	'curveType' : 'function',
         'colors' : ['green', 'blue'],
-	'chartArea': {'height': '80%', 'width': '90%'},
+	'chartArea': {'height': '80%', 'width': '80%'},
        'hAxis': { 'textPosition' : 'out', 'slantedText': false , 'showTextEvery' : 1, 'gridlines' : { 'count' : 8}},
-       'vAxis': {'viewWindow': {'min': 0, 'max': 70}, 'title' : 'Session Rate', 'titleTextStyle' : {'bold' : false, 'italic' : false} },
-       'legend': {'position': 'none'}
+       'vAxis': {'viewWindow': {'min': 0, 'max': 70}, 'title' : 'Session Rate', 'titleTextStyle' : {'bold' : false, 'italic' : false} }
      },
      // Convert the first column from 'date' to 'string'.
      /*'view': {
@@ -75,7 +76,7 @@ function drawVisualization() {
      }*/
    });
    var jsonData_one = $.ajax({
-       url: "/api/?svname=vmn-415&day=lastday",
+       url: "/api/?svname="+ svname +"&day=lastday",
        dataType:"json",
        async: false
    }).responseText;
@@ -83,7 +84,7 @@ function drawVisualization() {
    var data1 = new google.visualization.DataTable(jsonData_one);
    
    var jsonData2 = $.ajax({
-          url: "/api/?svname=vmn-415&day=today",
+          url: "/api/?svname="+ svname +"&day=today",
           dataType:"json",
           async: false
           }).responseText;
@@ -95,21 +96,30 @@ function drawVisualization() {
     dashboard.bind(control, chart);   
     dashboard.draw(data);
     //alert(data.getNumberOfCols);
-    setTimeout(drawVisualization, 8000);
+    //setTimeout(drawVisualization(svname), 8000);
 }
- google.setOnLoadCallback(drawVisualization);
+ google.setOnLoadCallback(function(){
+	drawVisualization('');
+});
 </script>
   </head>
   <body>
     <h3>Performace @ Healthkart</h3>
     <label>Select cluster</label>
-    <select>
-    	<option value="api">API BOXES</option>
-	<option value="healthkart-prod">Healthkart-PROD</option>
+    <select onChange="drawVisualization(this.value)">
+    	<option value="--" selected>API BOXES</option>
+	<option value="--">------------</option>
+	<option value="vmn-411">VMN-411</option>
+	<option value="vmn-415">VMN-415</option>
+	<option value="vmn-416">VMN-416</option>
+	<option value="BACKEND">Total API CLUSTER</option>
+	<option value="--">--------------</option>
+	<option value="--">Healthkart-PROD</option>
+	<option value="--">--------------</option>
     </select>
     <div id="dashboard">
-        <div id="chart" style="width : 1200px; height: 450px"></div>
-        <div id="control" style="width: 1200px; heigth: 50px;"></div>
+        <div id="chart" style="width : 1300px; height: 450px"></div>
+        <div id="control" style="width: 1300px; heigth: 50px;"></div>
     </div>
     <div id="joined_table">
     	

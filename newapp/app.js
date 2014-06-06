@@ -55,12 +55,32 @@ function statsapp(){
 					if (err) {
 						console.log("Error data not inserted");
 					}
-					console.log("Inserted to DB");
+					console.log("API Cluster stats inserted to DB");
 				});
 			}
 		});
 		fs.createReadStream(csvFile).pipe(csvConverter);
 		setTimeout(statsapp, 5000);
+	});
+	cp.exec('GET -C "healthkart:adw38&6cdQE" "http://healthkart.com/haproxy?stats;csv;" > csv',function(error, stdout, stderr){
+		if (error || stderr){
+                        console.log("Did not recieve any data");
+                }
+                var csvFile = "./csv";
+                var csvConverter = new Converter();
+                csvConverter.on("end_parsed", function(jsonObj){
+                        for(var index in jsonObj){
+                                jsonObj[index]["timestamp"]  = Date.now();
+                                db.apibox.insert(jsonObj[index], function(err, result){
+                                        if (err) {
+                                                console.log("Error data not inserted");
+                                        }
+                                        console.log("HK-PROD Cluster stats inserted to DB");
+                                });
+                        }
+                });
+                fs.createReadStream(csvFile).pipe(csvConverter);
+                setTimeout(statsapp, 5000);
 	});
 }
 
@@ -94,13 +114,24 @@ app.get('/api/', function(req, res){
 	}
 	console.log(_cur_date);
 	console.log(_tommorow_date);
-	db.apibox.find({ "svname" : server, "timestamp" : { $gt: _cur_date, $lt: _tommorow_date} }, function(err, result){
+	db.apibox.find({ "# pxname" : "healthkart", "svname" : server, "timestamp" : { $gt: _cur_date, $lt: _tommorow_date} }, function(err, result){
 		//console.log(result);
-		var obj = {
-			cols : [{"label" : "Time", "type" : "datetime"},
-				{"label" : "Today", "type" : "number"}
-				],
-			rows : [],
+		var obj = {};	
+		if( day == "today" ){
+			obj = {
+				cols : [{"id" : 'xaxis', "label" : "Time", "type" : "datetime"},
+					{"id" : 'today', "label" : "Today", "type" : "number"}
+					],
+				rows : [],
+			}
+		}
+		else if ( day == "lastday"){
+			 obj = {
+                                cols : [{"id" : 'xaxis' ,"label" : "Time", "type" : "datetime"},
+                                        {"id" : 'yesterday', "label" : "Yesterday", "type" : "number"}
+                                        ],
+                                rows : [],
+                        }
 		}
 		for (var index in result){
 			var _date = result[index]["timestamp"];
