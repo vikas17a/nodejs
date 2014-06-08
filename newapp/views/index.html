@@ -11,9 +11,16 @@
           		async: false
           	}).responseText;
           
-      		// Create our data table out of JSON data loaded from server.
-	        var data = new google.visualization.DataTable(jsonData);
+		var jsonData2 = $.ajax({
+                        url: "/api/?svname=vmn-411&day=lastday&box=api",
+                        dataType:"json",
+                        async: false
+                }).responseText;
 
+                var data2 = new google.visualization.DataTable(jsonData2);
+      		// Create our data table out of JSON data loaded from server.
+	        var data1 = new google.visualization.DataTable(jsonData);
+		var data = google.visualization.data.join(data1, data2, 'full', [[0,0]], [1], [1]);
         	var chart = new google.visualization.AnnotatedTimeLine(document.getElementById('chart_div'));
         	chart.draw(data, {displayAnnotations: true});
       	 }
