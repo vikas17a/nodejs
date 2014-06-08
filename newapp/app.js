@@ -46,7 +46,7 @@ app.get('/', function(req, res){
 function statsapp(){
 	cp.exec('GET -C "healthkart:adw38&6cdQE" "http://api.healthkart.com/haproxy?stats;csv;norefresh" > csv', function(error, stdout, stderr){
 		if (error || stderr){
-			console.log("Did not recieve any data");
+			console.log("Did not recieve any data" + error + " " +stderr);
 		}
 		var csvFile = "./csv";
 		var csvConverter = new Converter();
@@ -56,7 +56,7 @@ function statsapp(){
 				jsonObj[index]["# pxname"] = "api";
 				db.apibox.insert(jsonObj[index], function(err, result){
 					if (err) {
-						console.log("Error data not inserted");
+						console.log("Error data not inserted" + err);
 					}
 					console.log("API Cluster stats inserted to DB");
 				});
@@ -65,7 +65,7 @@ function statsapp(){
 		fs.createReadStream(csvFile).pipe(csvConverter);
 		cp.exec('GET -C "healthkart:adw38&6cdQE" "http://healthkart.com/haproxy?stats;csv;norefresh" > csv2',function(error, stdout, stderr){
 		if (error || stderr){
-                        console.log("Did not recieve any data");
+                        console.log("Did not recieve any data" + error + stderr);
                 }
                 var csvFile = "./csv2";
                 var csvConverter = new Converter();
@@ -77,7 +77,7 @@ function statsapp(){
 				}
                                 db.apibox.insert(jsonObj[index], function(err, result){
                                         if (err) {
-                                                console.log("Error data not inserted");
+                                                console.log("Error data not inserted" + err);
                                         }
                                         console.log("HK-PROD Cluster stats inserted to DB");
                                 });
@@ -148,14 +148,12 @@ app.get('/api/', function(req, res){
 				_date = Date.parse(d);
 				d = "Date(" + _date + ")";
 			}
-			//var d = Date(_date);
-			//var formattedDate = d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear();
-			//var hours = (d.getHours() < 10) ? "0" + d.getHours() : d.getHours();
-			//var minutes = (d.getMinutes() < 10) ? "0" + d.getMinutes() : d.getMinutes();
-			//var formattedTime = hours + ":" + minutes;
 			obj.rows.push({"c" : [{"v" : d },{"v" : result[index]["rate"]}]});
 		}
 		res.send(obj);
+		if(err){
+			console.log(err);
+		}
 	});
 	console.log("Data Recieved from API HAPROXY BOXES");		
 });

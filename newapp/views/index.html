@@ -11,9 +11,8 @@
       google.load('visualization', '1.1', {packages: ['corechart', 'controls']});
     </script>
     <script type="text/javascript">
-    //var _currdate = new Date();
-    //_currdate.setMinutes(_currdate.getMinutes() - 10);
-    //var _tilldate = new Date();
+    var _currdate;
+    var _tilldate;
     var graphDraw;
     var svname,box;
 	function drawVisualization(sname,bbox) {
@@ -24,10 +23,10 @@
 	if(bbox != ''){
 		box = bbox;
 	}
-    var _currdate = new Date();
+     currdate = new Date();
     _currdate.setMinutes(_currdate.getMinutes() - 1);
-    var _tilldate = new Date();
- var dashboard = new google.visualization.Dashboard(
+    tilldate = new Date();
+ 	var dashboard = new google.visualization.Dashboard(
        document.getElementById('dashboard'));
 
    var control = new google.visualization.ControlWrapper({
@@ -48,12 +47,10 @@
          // Thus, this view has two columns: the date (axis) and the stock value (line series).
          'chartView': {
            'columns': [0,1,2]
-         },
-         // 1 day in milliseconds = 24 * 60 * 60 * 1000 = 86,400,000
-         //'minRangeSize': 8640
+         }
        }
      },
-     // Initial range: 2012-02-09 to 2012-03-20.
+     // Initial range: example  2012-02-09 to 2012-03-20.
      'state': {'range': {'start': _currdate , 'end': _tilldate}}
    });
 
@@ -73,15 +70,6 @@
        'vAxis': {'title' : 'Session Rate', 'titleTextStyle' : {'bold' : false, 'italic' : false} }
      },
      // Convert the first column from 'date' to 'string'.
-     /*'view': {
-       'columns': [
-         {
-           'calc': function(dataTable, rowIndex) {
-             return dataTable.getFormattedValue(rowIndex, 0);
-           },
-           'type': 'string'
-         }, 1]
-     }*/
    });
 	function getit(){
    		var jsonData_one = $.ajax({
@@ -100,19 +88,22 @@
 
     		var data2 = new google.visualization.DataTable(jsonData2);
       
-    		//var data = new google.visualization.DataTable();
+		var _currdate = new Date();
+    		currdate.setMinutes(_currdate.getMinutes() - 1);
+    		var _tilldate = new Date(); 
     		var data = google.visualization.data.join(data1, data2, 'full', [[0,0]], [1], [1]);
     		dashboard.bind(control, chart);   
     		dashboard.draw(data);
           }
 	  getit();
-	 // setTimeout(getit, 5000);
-    	//alert(data.getNumberOfCols);
-    	graphDraw = setTimeout(function(){drawVisualization('','');}, 11000);
+//	graphDraw = setTimeout(getit, 8000);	 
 }
 	function stop(){
 		if(graphDraw){
 			clearTimeout(graphDraw);
+		}
+		else{
+			alert('trying...');
 		}
 	}
 	function restart(){
