@@ -1,154 +1,29 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-    <title>
-      Graphical Stats of Server @ Healthkart
-    </title>
-    <script type="text/javascript" src="//www.google.com/jsapi"></script>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script type="text/javascript">
-      google.load('visualization', '1.1', {packages: ['corechart', 'controls']});
-    </script>
-    <script type="text/javascript">
-    var _currdate;
-    var _tilldate;
-    var graphDraw;
-    var svname,box;
-	function drawVisualization(sname,bbox) {
-	//alert(svname);
-	if(sname != ''){
-    		svname = sname;
-	}
-	if(bbox != ''){
-		box = bbox;
-	}
-     currdate = new Date();
-    _currdate.setMinutes(_currdate.getMinutes() - 1);
-    tilldate = new Date();
- 	var dashboard = new google.visualization.Dashboard(
-       document.getElementById('dashboard'));
-
-   var control = new google.visualization.ControlWrapper({
-     'controlType': 'ChartRangeFilter',
-     'containerId': 'control',
-     'options': {
-       // Filter by the date axis.
-       'filterColumnIndex': 0,
-       'ui': {
-         'chartType': 'LineChart',
-         'chartOptions': {
-           'chartArea': {'width': '200%', 'height' : '50%'},
-           'hAxis': {'baselineColor': 'none'},
-	   'interpolateNulls' : true,
-	   'colors' : [ 'green' , 'blue'],
-         },
-         // Display a single series that shows the closing value of the stock.
-         // Thus, this view has two columns: the date (axis) and the stock value (line series).
-         'chartView': {
-           'columns': [0,1,2]
-         }
-       }
-     },
-     // Initial range: example  2012-02-09 to 2012-03-20.
-     'state': {'range': {'start': _currdate , 'end': _tilldate}}
-   });
-
-   var chart = new google.visualization.ChartWrapper({
-     'chartType': 'LineChart',
-     'containerId': 'chart',
-     'options': {
-       // Use the same chart area width as the control for axis alignment.
-        'title' : svname,
-	'interpolateNulls' : true,
-	'crosshair' : { 'trigger' : 'both' },
-	'dateFormat' : 'HH:mm',
-	'curveType' : 'function',
-        'colors' : ['green', 'blue'],
-	'chartArea': {'height': '80%', 'width': '80%'},
-       'hAxis': { 'textPosition' : 'out', 'slantedText': false , 'showTextEvery' : 1, 'gridlines' : { 'count' : 8}},
-       'vAxis': {'title' : 'Session Rate', 'titleTextStyle' : {'bold' : false, 'italic' : false} }
-     },
-     // Convert the first column from 'date' to 'string'.
-   });
-	function getit(){
-   		var jsonData_one = $.ajax({
-       		url: "/api/?svname="+ svname +"&day=lastday&box=" + box,
-       		dataType:"json",
-       		async: false
-   		}).responseText;
-  
-   		var data1 = new google.visualization.DataTable(jsonData_one);
-   
-   		var jsonData2 = $.ajax({
-        		url: "/api/?svname="+ svname +"&day=today&box=" + box,
+    <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+     <script  type="text/javascript">
+	 google.load('visualization', '1', {'packages':['annotatedtimeline']});
+	 function drawChart() {
+		var jsonData = $.ajax({
+         		 url: "api/?svname=vmn-411&day=today&box=api",
           		dataType:"json",
           		async: false
           	}).responseText;
+          
+      		// Create our data table out of JSON data loaded from server.
+	        var data = new google.visualization.DataTable(jsonData);
 
-    		var data2 = new google.visualization.DataTable(jsonData2);
-      
-		var _currdate = new Date();
-    		currdate.setMinutes(_currdate.getMinutes() - 1);
-    		var _tilldate = new Date(); 
-    		var data = google.visualization.data.join(data1, data2, 'full', [[0,0]], [1], [1]);
-    		dashboard.bind(control, chart);   
-    		dashboard.draw(data);
-          }
-	  getit();
-//	graphDraw = setTimeout(getit, 8000);	 
-}
-	function stop(){
-		if(graphDraw){
-			clearTimeout(graphDraw);
-		}
-		else{
-			alert('trying...');
-		}
-	}
-	function restart(){
-		drawVisualization(svname,box);
-	}
- google.setOnLoadCallback(function(){
-	drawVisualization('','');
-});
-</script>
+        	var chart = new google.visualization.AnnotatedTimeLine(document.getElementById('chart_div'));
+        	chart.draw(data, {displayAnnotations: true});
+      	 }
+	 google.setOnLoadCallback(drawChart);	
+     </script>
   </head>
+
   <body>
-    <h3><font face="verdana" color="green">Performace @ Healthkart</font></h3>
-    <label>Select cluster</label>
-    <select onChange="drawVisualization(this.value,'api')">
-    	<option value="--" selected>API BOXES</option>
-	<option value="--">------------</option>
-	<option value="vmn-411">VMN-411</option>
-	<option value="vmn-415">VMN-415</option>
-	<option value="vmn-416">VMN-416</option>
-	<option value="BACKEND">Total API CLUSTER</option>
-	<option value="--">-----------------</option>
-     </select>
-     <select onChange="drawVisualization(this.value,'prod')">
-	<option value="--">Healthkart-PROD</option>
-	<option value="--">--------------</option>
-	<option value="vmn-265-P"> VMN-265-P </option>
-	<option value="vmn-400-Q"> VMN-400-Q </option>
-	<option value="vmn-396-R"> VMN-396-R </option>
-	<option value="vmn-339-S"> VMN-339-S </option>
-	<option value="spkd-0215-T"> SPKP-0215-T </option>
-	<option value="BACKEND"> Total HK-Prod </option>
-    </select>
-    <select onChange="drawVisualization(this.value,'healthkart_s40')">
-	<option>Healthkart</option>
-	<option value="--">--------------</option>
-	<option value="prod-s40">Prod S40</option>
-    </select>
-    <button onClick="stop()">Stop Auto Loading</button>
-    <button onClick="restart()">Start Auto Loading</button>
-    <div id="dashboard">
-        <div id="chart" style="width : 1300px; height: 450px"></div>
-        <div id="control" style="width: 1300px; heigth: 50px;"></div>
-    </div>
-    <div id="joined_table">
-    	
-    </div>
+    // Note how you must specify the size of the container element explicitly!
+    <div id='chart_div' style='width: 700px; height: 240px;'></div>
+
   </body>
 </html>
