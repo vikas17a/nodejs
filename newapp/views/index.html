@@ -3,8 +3,9 @@
     <script type='text/javascript' src='http://www.google.com/jsapi'></script>
      <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
      <script  type="text/javascript">
-	 google.load('visualization', '1', {'packages':['annotatedtimeline']});
-	 function drawChart() {
+	//google.load('visualization', '1', {'packages':['annotatedtimeline']});
+	google.load('visualization', '1.1', {'packages':['annotationchart']}); 
+	function drawChart() {
 		var jsonData = $.ajax({
          		 url: "api/?svname=vmn-411&day=today&box=api",
           		dataType:"json",
@@ -21,7 +22,7 @@
       		// Create our data table out of JSON data loaded from server.
 	        var data1 = new google.visualization.DataTable(jsonData);
 		var data = google.visualization.data.join(data1, data2, 'full', [[0,0]], [1], [1]);
-        	var chart = new google.visualization.AnnotatedTimeLine(document.getElementById('chart_div'));
+        	var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
         	chart.draw(data, {displayAnnotations: true});
       	 }
 	 google.setOnLoadCallback(drawChart);	
