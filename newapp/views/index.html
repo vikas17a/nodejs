@@ -5,33 +5,87 @@
      <script  type="text/javascript">
 	//google.load('visualization', '1', {'packages':['annotatedtimeline']});
 	google.load('visualization', '1.1', {'packages':['annotationchart']}); 
-	function drawChart() {
+	var svname='',box='',graphTimer;
+	var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
+	function drawChart(sname,bbox) {
+		chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
+		if(sname != ''){
+			svname = sname;
+		}
+		else{
+			return;
+		}
+		if(bbox != ''){
+			box = bbox;
+		}
+		else{
+			return;
+		}
+		var _currdate = new Date();
+        	_currdate.setMinutes(_currdate.getMinutes() - 10);
+        	var _tilldate = new Date();
+
 		var jsonData = $.ajax({
-         		 url: "api/?svname=vmn-411&day=today&box=api",
+         		 url: "api/?svname="+svname+"&day=today&box="+box,
           		dataType:"json",
           		async: false
           	}).responseText;
-          
 		var jsonData2 = $.ajax({
-                        url: "/api/?svname=vmn-411&day=lastday&box=api",
+                        url: "/api/?svname="+svname+"&day=lastday&box="+box,
                         dataType:"json",
                         async: false
                 }).responseText;
 
                 var data2 = new google.visualization.DataTable(jsonData2);
-      		// Create our data table out of JSON data loaded from server.
-	        var data1 = new google.visualization.DataTable(jsonData);
+      		var data1 = new google.visualization.DataTable(jsonData);
 		var data = google.visualization.data.join(data1, data2, 'full', [[0,0]], [1], [1]);
-        	var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
-        	chart.draw(data, {displayAnnotations: true});
-      	 }
-	 google.setOnLoadCallback(drawChart);	
+        	chart.draw(data, {displayAnnotations: true, zoomEndTime : _tilldate, zoomStartTime : _currdate });
+		graphTimer = setTimeout(function(){
+			$('#chart_div').html('');
+			drawChart(svname,box);
+		},15000);
+	}
+        google.setOnLoadCallback(function(){
+		drawChart('','');
+	});
+	function stopAuto(){
+		clearTimeout(graphTimer);
+	}
+	function startAgain(){
+		setTimeout(function(){drawChart(svname,box)},15000);
+	}	
      </script>
   </head>
 
   <body>
-    // Note how you must specify the size of the container element explicitly!
-    <div id='chart_div' style='width: 700px; height: 240px;'></div>
-
+     <h3>Performace @ Healthkart</h3>
+    <label>Select cluster</label>
+    <select onChange="$('#chart_div').html('');drawChart(this.value,'api')">
+        <option value="--" selected>API BOXES</option>
+        <option value="--">------------</option>
+        <option value="vmn-411">VMN-411</option>
+        <option value="vmn-415">VMN-415</option>
+        <option value="vmn-416">VMN-416</option>
+        <option value="BACKEND">Total API CLUSTER</option>
+        <option value="--">-----------------</option>
+     </select>
+     <select onChange="$('#chart_div').html('');drawChart(this.value,'prod')">
+        <option value="--">Healthkart-PROD</option>
+        <option value="--">--------------</option>
+        <option value="vmn-265-P"> VMN-265-P </option>
+        <option value="vmn-400-Q"> VMN-400-Q </option>
+        <option value="vmn-396-R"> VMN-396-R </option>
+        <option value="vmn-339-S"> VMN-339-S </option>
+        <option value="spkd-0215-T"> SPKP-0215-T </option>
+        <option value="BACKEND"> Total HK-Prod </option>
+    </select>
+    <select onChange="$('#chart_div').html('');drawChart(this.value,'healthkart_s40')">
+        <option>Healthkart</option>
+        <option value="--">--------------</option>
+        <option value="prod-s40">Prod S40</option>
+    </select>
+    <button onClick="stopAuto()">Stop Reload</button>
+    <button onClick="startAgain()">Start AutoLoad</button>
+    <div id='chart_div' style='width: 1200px; height: 540px;'></div>
   </body>
 </html>

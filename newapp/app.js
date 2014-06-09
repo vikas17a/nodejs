@@ -47,6 +47,7 @@ function statsapp(){
 	cp.exec('GET -C "healthkart:adw38&6cdQE" "http://api.healthkart.com/haproxy?stats;csv;norefresh" > csv', function(error, stdout, stderr){
 		if (error || stderr){
 			console.log("Did not recieve any data" + error + " " +stderr);
+			throw error;
 		}
 		var csvFile = "./csv";
 		var csvConverter = new Converter();
@@ -66,7 +67,8 @@ function statsapp(){
 		cp.exec('GET -C "healthkart:adw38&6cdQE" "http://healthkart.com/haproxy?stats;csv;norefresh" > csv2',function(error, stdout, stderr){
 		if (error || stderr){
                         console.log("Did not recieve any data" + error + stderr);
-                }
+                	throw error;
+		}
                 var csvFile = "./csv2";
                 var csvConverter = new Converter();
                 csvConverter.on("end_parsed", function(jsonObj){
