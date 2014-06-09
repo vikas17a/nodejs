@@ -41,13 +41,15 @@ app.get('/', function(req, res){
 	res.render('index.html');
 });
 
+var cp_1 = require('child_process');
+var cp_2 = require('child_process');
+var cp_3 = require('child_process');
 //// Stats application  function to grap scv and insert into db  ///
 
 function statsapp(){
 	cp.exec('GET -C "healthkart:adw38&6cdQE" "http://api.healthkart.com/haproxy?stats;csv;norefresh" > csv', function(error, stdout, stderr){
 		if (error || stderr){
 			console.log("Did not recieve any data" + error + " " +stderr);
-			throw error;
 		}
 		var csvFile = "./csv";
 		var csvConverter = new Converter();
@@ -62,12 +64,19 @@ function statsapp(){
 					console.log("API Cluster stats inserted to DB");
 				});
 			}
+			cp_1.exec("curl -H \"content-type:application/x-www-form-urlencoded\" -d ' {\"timestamp\":\""+ new Date() +"\",\"appName\":\"api-haproxy\",\"bk_name\":\""+jsonObj[1]["svname"]+"\",\"cur_ses_rt\":"+jsonObj[1]["rate"]+",\"cur_sess\":"+jsonObj[1]["scur"]+",\"cur_ses_rt_max\":"+jsonObj[1]["rate_max"]+",\"cur_sess_max\":"+ jsonObj[1]["smax"] +",\"total_sess_rt\":"+jsonObj[4]["rate"]+",\"total_sess\":"+jsonObj[4]["scur"]+"}' http://logs-01.loggly.com/inputs/595fb65f-c050-4cf8-b102-bf827cd398f2/tag/http/",function(){ console.log("Send 1-apibox");});
+			cp_2.exec("curl -H \"content-type:application/x-www-form-urlencoded\" -d ' {\"timestamp\":\""+ new Date() +"\",\"appName\":\"api-haproxy\",\"bk_name\":\""+jsonObj[2]["svname"]+"\",\"cur_ses_rt\":"+jsonObj[2]["rate"]+",\"cur_sess\":"+jsonObj[2]["scur"]+",\"cur_ses_rt_max\":"+jsonObj[2]["rate_max"]+",\"cur_sess_max\":"+ jsonObj[2]["smax"] +",\"total_sess_rt\":"+jsonObj[4]["rate"]+",\"total_sess\":"+jsonObj[4]["scur"]+"}' http://logs-01.loggly.com/inputs/595fb65f-c050-4cf8-b102-bf827cd398f2/tag/http/",function(){ console.log("Send 2-apibox");});
+		     cp_3.exec("curl -H \"content-type:application/x-www-form-urlencoded\" -d ' {\"timestamp\":\""+ new Date() +"\",\"appName\":\"api-haproxy\",\"bk_name\":\""+jsonObj[3]["svname"]+"\",\"cur_ses_rt\":"+jsonObj[3]["rate"]+",\"cur_sess\":"+jsonObj[3]["scur"]+",\"cur_ses_rt_max\":"+jsonObj[3]["rate_max"]+",\"cur_sess_max\":"+ jsonObj[3]["smax"] +",\"total_sess_rt\":"+jsonObj[4]["rate"]+",\"total_sess\":"+jsonObj[4]["scur"]+"}' http://logs-01.loggly.com/inputs/595fb65f-c050-4cf8-b102-bf827cd398f2/tag/http/",function(){ console.log("Send 3-apibox");});
 		});
-		fs.createReadStream(csvFile).pipe(csvConverter);
+		try{
+			fs.createReadStream(csvFile).pipe(csvConverter);
+		}
+		catch(err){
+			console.log('Misbehaviour');
+		}
 		cp.exec('GET -C "healthkart:adw38&6cdQE" "http://healthkart.com/haproxy?stats;csv;norefresh" > csv2',function(error, stdout, stderr){
 		if (error || stderr){
                         console.log("Did not recieve any data" + error + stderr);
-                	throw error;
 		}
                 var csvFile = "./csv2";
                 var csvConverter = new Converter();
@@ -85,7 +94,12 @@ function statsapp(){
                                 });
                         }
                 });
-                fs.createReadStream(csvFile).pipe(csvConverter);
+		try{
+               		fs.createReadStream(csvFile).pipe(csvConverter);
+		}
+		catch(err){
+			console.log('Misbehaviour');
+		}
 		});
 		setTimeout(statsapp, 5000);
 	});
