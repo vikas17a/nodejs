@@ -54,7 +54,7 @@ function statsapp(){
 		var csvFile = "./csv";
 		var csvConverter = new Converter();
 		csvConverter.on("end_parsed", function(jsonObj){
-			for(var index in jsonObj){
+			/*for(var index in jsonObj){
 				jsonObj[index]["timestamp"]  = Date.now();
 				jsonObj[index]["# pxname"] = "api";
 				db.apibox.insert(jsonObj[index], function(err, result){
@@ -63,7 +63,7 @@ function statsapp(){
 					}
 					console.log("API Cluster stats inserted to DB");
 				});
-			}
+			}*/
 			try{
 			cp_1.exec("curl -H \"content-type:application/x-www-form-urlencoded\" -d ' {\"timestamp\":\""+ new Date() +"\",\"appName\":\"api-haproxy\",\"bk_name\":\""+jsonObj[1]["svname"]+"\",\"cur_ses_rt\":"+jsonObj[1]["rate"]+",\"cur_sess\":"+jsonObj[1]["scur"]+",\"cur_ses_rt_max\":"+jsonObj[1]["rate_max"]+",\"cur_sess_max\":"+ jsonObj[1]["smax"] +",\"total_sess_rt\":"+jsonObj[4]["rate"]+",\"total_sess\":"+jsonObj[4]["scur"]+"}' http://logs-01.loggly.com/inputs/595fb65f-c050-4cf8-b102-bf827cd398f2/tag/http/",function(){ console.log("Send 1-apibox");});
 			cp_2.exec("curl -H \"content-type:application/x-www-form-urlencoded\" -d ' {\"timestamp\":\""+ new Date() +"\",\"appName\":\"api-haproxy\",\"bk_name\":\""+jsonObj[2]["svname"]+"\",\"cur_ses_rt\":"+jsonObj[2]["rate"]+",\"cur_sess\":"+jsonObj[2]["scur"]+",\"cur_ses_rt_max\":"+jsonObj[2]["rate_max"]+",\"cur_sess_max\":"+ jsonObj[2]["smax"] +",\"total_sess_rt\":"+jsonObj[4]["rate"]+",\"total_sess\":"+jsonObj[4]["scur"]+"}' http://logs-01.loggly.com/inputs/595fb65f-c050-4cf8-b102-bf827cd398f2/tag/http/",function(){ console.log("Send 2-apibox");});
@@ -86,7 +86,7 @@ function statsapp(){
                 var csvFile = "./csv2";
                 var csvConverter = new Converter();
                 csvConverter.on("end_parsed", function(jsonObj){
-                        for(var index in jsonObj){
+                        /*for(var index in jsonObj){
                                 jsonObj[index]["timestamp"]  = Date.now();
 				if(jsonObj[index]["# pxname"] == "healthkart"){
 					jsonObj[index]["# pxname"] = "prod";
@@ -97,13 +97,21 @@ function statsapp(){
                                         }
                                         console.log("HK-PROD Cluster stats inserted to DB");
                                 });
-                        }
+                        }*/
+			for(var i = 2; i < 7; i++){
+			try{
+                        	cp2.exec("curl -H \"content-type:application/x-www-form-urlencoded\" -d ' {\"timestamp\":\""+ new Date() +"\",\"appName\":\"prod-haproxy\",\"bk_name\":\""+jsonObj[i]["svname"]+"\",\"cur_ses_rt\":"+jsonObj[i]["rate"]+",\"cur_sess\":"+jsonObj[i]["scur"]+",\"cur_ses_rt_max\":"+jsonObj[i]["rate_max"]+",\"cur_sess_max\":"+ jsonObj[i]["smax"] +",\"total_sess_rt\":"+jsonObj[7]["rate"]+",\"total_sess\":"+jsonObj[7]["scur"]+"}' http://logs-01.loggly.com/inputs/595fb65f-c050-4cf8-b102-bf827cd398f2/tag/http/",function(){ console.log("Send" + i + "healthkart-prod to loggly");});
+			}
+			catch(err){
+				console.log('Misbehaved but ignored')
+			}
+			}
                 });
 		try{
                		fs.createReadStream(csvFile).pipe(csvConverter);
 		}
 		catch(err){
-			console.log('Misbehaviour');
+			console.log('Misbehaviour but ignored');
 		}
 		});
 		setTimeout(statsapp, 5000);
