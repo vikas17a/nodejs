@@ -64,9 +64,14 @@ function statsapp(){
 					console.log("API Cluster stats inserted to DB");
 				});
 			}
+			try{
 			cp_1.exec("curl -H \"content-type:application/x-www-form-urlencoded\" -d ' {\"timestamp\":\""+ new Date() +"\",\"appName\":\"api-haproxy\",\"bk_name\":\""+jsonObj[1]["svname"]+"\",\"cur_ses_rt\":"+jsonObj[1]["rate"]+",\"cur_sess\":"+jsonObj[1]["scur"]+",\"cur_ses_rt_max\":"+jsonObj[1]["rate_max"]+",\"cur_sess_max\":"+ jsonObj[1]["smax"] +",\"total_sess_rt\":"+jsonObj[4]["rate"]+",\"total_sess\":"+jsonObj[4]["scur"]+"}' http://logs-01.loggly.com/inputs/595fb65f-c050-4cf8-b102-bf827cd398f2/tag/http/",function(){ console.log("Send 1-apibox");});
 			cp_2.exec("curl -H \"content-type:application/x-www-form-urlencoded\" -d ' {\"timestamp\":\""+ new Date() +"\",\"appName\":\"api-haproxy\",\"bk_name\":\""+jsonObj[2]["svname"]+"\",\"cur_ses_rt\":"+jsonObj[2]["rate"]+",\"cur_sess\":"+jsonObj[2]["scur"]+",\"cur_ses_rt_max\":"+jsonObj[2]["rate_max"]+",\"cur_sess_max\":"+ jsonObj[2]["smax"] +",\"total_sess_rt\":"+jsonObj[4]["rate"]+",\"total_sess\":"+jsonObj[4]["scur"]+"}' http://logs-01.loggly.com/inputs/595fb65f-c050-4cf8-b102-bf827cd398f2/tag/http/",function(){ console.log("Send 2-apibox");});
-		     cp_3.exec("curl -H \"content-type:application/x-www-form-urlencoded\" -d ' {\"timestamp\":\""+ new Date() +"\",\"appName\":\"api-haproxy\",\"bk_name\":\""+jsonObj[3]["svname"]+"\",\"cur_ses_rt\":"+jsonObj[3]["rate"]+",\"cur_sess\":"+jsonObj[3]["scur"]+",\"cur_ses_rt_max\":"+jsonObj[3]["rate_max"]+",\"cur_sess_max\":"+ jsonObj[3]["smax"] +",\"total_sess_rt\":"+jsonObj[4]["rate"]+",\"total_sess\":"+jsonObj[4]["scur"]+"}' http://logs-01.loggly.com/inputs/595fb65f-c050-4cf8-b102-bf827cd398f2/tag/http/",function(){ console.log("Send 3-apibox");});
+		       cp_3.exec("curl -H \"content-type:application/x-www-form-urlencoded\" -d ' {\"timestamp\":\""+ new Date() +"\",\"appName\":\"api-haproxy\",\"bk_name\":\""+jsonObj[3]["svname"]+"\",\"cur_ses_rt\":"+jsonObj[3]["rate"]+",\"cur_sess\":"+jsonObj[3]["scur"]+",\"cur_ses_rt_max\":"+jsonObj[3]["rate_max"]+",\"cur_sess_max\":"+ jsonObj[3]["smax"] +",\"total_sess_rt\":"+jsonObj[4]["rate"]+",\"total_sess\":"+jsonObj[4]["scur"]+"}' http://logs-01.loggly.com/inputs/595fb65f-c050-4cf8-b102-bf827cd398f2/tag/http/",function(){ console.log("Send 3-apibox");});
+			}
+			catch(err){
+				console.log('Misbehaviour but ignored');
+			}
 		});
 		try{
 			fs.createReadStream(csvFile).pipe(csvConverter);
